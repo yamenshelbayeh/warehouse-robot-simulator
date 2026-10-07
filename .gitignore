@@ -1,0 +1,29 @@
+# .NET
+**/bin/
+**/obj/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+.vs/
+
+# Node / React
+**/node_modules/
+**/dist/
+**/.vite/
+**/coverage/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+appsettings.Development.json
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
