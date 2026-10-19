@@ -64,4 +64,21 @@ public class AStarPathfinderTests
         Assert.Single(path);
         Assert.Equal((0, 0), path[0]);
     }
+    
+    [Fact]
+    public void ReturnsEmptyPathWhenGoalIsUnreachable()
+    {
+        var grid = new WarehouseGrid(new CellType[,]
+        {
+            { CellType.Empty, CellType.Shelf, CellType.Empty },
+            { CellType.Shelf, CellType.Shelf, CellType.Empty },
+            { CellType.Empty, CellType.Empty, CellType.Empty }
+        });
+
+        var path = AStarPathfinder.FindPath(
+            grid, (0, 0), (2, 2));
+
+        Assert.Empty(path);
+    }
+
 }
