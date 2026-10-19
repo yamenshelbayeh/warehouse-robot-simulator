@@ -31,3 +31,4 @@ public class WarehouseGridTests
         Assert.False(warehouse.IsWalkable(10, 10));
     }
 }
+
