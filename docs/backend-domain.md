@@ -1,18 +1,19 @@
-# Persisted domain and rules
+# Warehouse Robot Simulator — Database Design
+
+## 1. ER Diagram
+
+This diagram shows the main tables in our database and how they are connected.
 
 ```mermaid
 erDiagram
     Warehouse ||--|{ GridCell : contains
-    Warehouse ||--o{ WarehouseRobot : operates
-    Warehouse ||--o{ DeliveryTask : queues
-    Warehouse ||--o{ TaskAssignment : records
-    Warehouse ||--o{ CellReservation : stores
-    GridCell ||--o| WarehouseRobot : occupies
-    GridCell ||--o{ DeliveryTask : pickup_or_dropoff
+    Warehouse ||--o{ WarehouseRobot : has
+    Warehouse ||--o{ DeliveryTask : has
     WarehouseRobot ||--o{ TaskAssignment : receives
-    DeliveryTask ||--o{ TaskAssignment : assigned_through
-    WarehouseRobot ||--o{ CellReservation : reserves
-    GridCell ||--o{ CellReservation : from_and_to
+    DeliveryTask ||--o{ TaskAssignment : uses
+    WarehouseRobot ||--o{ CellReservation : makes
+    GridCell ||--o{ CellReservation : tracks
+
     Warehouse {
         uuid Id PK
         string Name
@@ -21,115 +22,122 @@ erDiagram
         long Tick
         long Revision
     }
+
     GridCell {
         uuid WarehouseId PK,FK
         int Row PK
         int Column PK
         string Type
     }
+
     WarehouseRobot {
         uuid WarehouseId PK,FK
         int Id PK
-        int Row FK
-        int Column FK
+        int Row
+        int Column
         string State
         int Battery
         int Capacity
-        bool Enabled
-        bool CarryingItem
     }
+
     DeliveryTask {
-        uuid WarehouseId PK,FK
         uuid Id PK
-        int PickupRow FK
-        int PickupColumn FK
-        int DropoffRow FK
-        int DropoffColumn FK
-        int Load
-        int Priority
+        uuid WarehouseId FK
+        int PickupRow
+        int PickupColumn
+        int DropoffRow
+        int DropoffColumn
         string Status
     }
+
     TaskAssignment {
-        uuid WarehouseId PK,FK
         uuid Id PK
         uuid TaskId FK
         int RobotId FK
-        long AssignedAtTick
-        long EndedAtTick
         bool Active
     }
+
     CellReservation {
         uuid WarehouseId PK,FK
         long Tick PK
-        int Row PK,FK
-        int Column PK,FK
+        int Row PK
+        int Column PK
         int RobotId FK
-        int FromRow FK
-        int FromColumn FK
     }
 ```
 
-`Shelf` is the existing simulation library's impassable obstacle type. A separate
-obstacle table is unnecessary for the current four cell types. Every warehouse
-persists every grid cell, including `Empty`. Composite foreign keys keep robots,
-task endpoints, assignments and reservations within the same warehouse.
+## 2. Main Entities
 
-The database enforces one robot per current cell, one active assignment per robot,
-one active assignment per task, one reservation per cell/tick, and one reservation
-per robot/tick. Assignment history survives completion and cancellation. Only the
-latest committed tick's reservations are retained.
+Our database contains six main entities:
 
-## Business invariants
+- **Warehouse:** Stores warehouse information and size.
+- **GridCell:** Represents cells such as empty spaces, shelves, pickup points, and drop-off points.
+- **WarehouseRobot:** Stores robot information, including position, battery, capacity, and status.
+- **DeliveryTask:** Stores tasks that robots need to complete.
+- **TaskAssignment:** Connects robots with their delivery tasks.
+- **CellReservation:** Tracks which cells robots use during movement.
 
-- Robots start on distinct walkable cells, with battery 0–100 and capacity 1–1000.
-  Disabled, busy and carrying robots cannot be assigned.
-- Tasks require existing `Pickup` and `Dropoff` cells, load 1–1000 and priority 0–10.
-  Both route legs must be reachable. Capacity must cover the load.
-- Battery eligibility uses the A* distance to pickup plus the A* delivery
-  distance plus a reserve of 10. One move costs one battery unit; waiting,
-  pickup and dropoff cost zero in this first policy.
-- Eligible robots are passed to Erfan's nearest-path selector, retaining his
-  lowest-ID tie breaker. Assignment is explicit for a chosen pending task;
-  task priority currently governs movement conflicts, not an automatic queue.
-- Only pending tasks can be assigned. Pending or assigned tasks can be cancelled
-  before pickup; carrying work cannot be cancelled. Clients cannot directly set
-  robot state, task status, positions or battery.
-- Layout edits are rejected while an assignment is active. A shelf cannot replace
-  an occupied cell, and a station referenced by a task cannot change its type.
+One warehouse can contain multiple robots and delivery tasks.
 
-```mermaid
-stateDiagram-v2
-    [*] --> Pending: Create task
-    Pending --> Assigned: Eligibility passes
-    Pending --> Cancelled: Cancel
-    Assigned --> Cancelled: Cancel before pickup
-    Assigned --> InProgress: Pickup tick completes
-    InProgress --> Completed: Dropoff tick completes
-```
+## 3. Business Logic
 
-Robot states reuse `Simulation.Models.RobotState` exactly:
-`Idle → MovingToPickup → PickingUp → MovingToDropoff → DroppingOff → Idle`.
-Arrival changes the movement state; the next tick performs pickup or dropoff.
+Our backend uses several rules to manage warehouse operations:
 
-## Atomicity
+- Robots must have enough battery and carrying capacity before receiving a task.
+- Busy robots cannot receive another task.
+- Robots cannot move through shelves.
+- Tasks must have valid pickup and drop-off locations.
+- The system uses Erfan's A* algorithm to calculate routes.
+- Robots are selected based on availability and route distance.
+- The system checks movements to prevent robot collisions.
+- Tasks can only be cancelled before the package is picked up.
 
-Every command reads the aggregate in an EF transaction with PostgreSQL
-`RepeatableRead`, checks the client's expected revision, applies rules and increments
-the warehouse revision. EF also treats the revision as a concurrency token.
-The transaction commits robot, task, assignment and reservation changes together.
-Concurrent-write/serialization conflicts return HTTP 409 and roll back the entire
-command. Read snapshots also use a transaction so split collection queries cannot
-mix different ticks.
+These rules make our project more than a simple CRUD application.
 
-## Movement scope
+## 4. Task and Robot States
 
-Each tick asks the existing A* algorithm for a route while treating other robots'
-starting cells as blocked. Candidates are considered by task priority descending,
-then robot ID ascending, and Erfan's collision checker rejects conflicting moves.
-Waiting/idle robots receive reservations too. All moves are then applied together.
+A delivery task goes through these stages:
 
-This conservative policy also forbids following another robot into a cell it
-vacates in the same tick. It does not guarantee progress in a narrow corridor.
-Repeated waits, starvation prevention and deadlock recovery need a later scheduler.
-Detours can consume more battery than the assignment's static estimate; movement
-stops at the reserve threshold. Charging/recovery is a later increment.
+**Pending → Assigned → InProgress → Completed**
+
+Tasks can also be cancelled before pickup.
+
+Robots follow these stages:
+
+**Idle → MovingToPickup → PickingUp → MovingToDropoff → DroppingOff → Idle**
+
+Once a delivery is completed, the robot becomes available for another task.
+
+## 5. Database Management
+
+We use **PostgreSQL** to store warehouse information.
+
+**Entity Framework Core (EF Core)** connects our C# classes to the database.
+
+We also use **EF Core Migrations** to create and update the database structure without writing SQL scripts manually.
+
+Database transactions and revision checks help prevent conflicting updates and ensure that related changes are saved together.
+
+## 6. Robot Movement
+
+Each simulation tick represents one step of the simulation.
+
+During each tick:
+
+1. The system checks the robot's task.
+2. It calculates a route using A*.
+3. It checks for possible movement conflicts.
+4. The robot moves if the next cell is safe.
+5. The new state is saved in PostgreSQL.
+
+Moving uses battery power, while waiting does not.
+
+Currently, we support basic safe movement and collision checks. More advanced features, such as automatic charging and deadlock recovery, will be implemented later.
+
+## 7. Testing
+
+We tested the backend using **xUnit**.
+
+All 41 tests passed, including simulation, API, business logic, and database tests.
+
+We also successfully completed a robot delivery in six simulation ticks and verified that its information was saved in PostgreSQL after restarting the API.
