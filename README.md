@@ -74,4 +74,15 @@ Update statistics and robot state
 
 ## Status
 
-Early development / project setup.
+The backend foundation now includes an ASP.NET Core API, EF Core/Npgsql migrations,
+persisted delivery tasks and assignments, guarded task transitions, battery/capacity
+eligibility, and atomic movement ticks with cell reservations.
+
+- [Run the backend and its demo](docs/backend-getting-started.md)
+- [Windows 11 + VS Code: exact setup steps](docs/windows-vscode.md)
+- [Domain model and ER diagram](docs/backend-domain.md)
+- [Public API and simulation integration contracts](docs/backend-contracts.md)
+
+The API references Erfan's existing `Simulation` library. Its algorithms, demo and
+tests are unchanged. The current tick policy is conservative; charging, automatic
+dispatch queues and deadlock recovery remain later increments.
