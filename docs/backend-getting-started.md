@@ -88,8 +88,8 @@ constraints and concurrent transactions.
 
 Verified locally: **17 existing simulation tests + 24 backend tests = 41 passed,
 0 skipped**, including 7 PostgreSQL integration tests. Local database verification
-used an isolated PostgreSQL 18 instance; CI is configured to run against PostgreSQL
-16, matching Compose. The CI workflow itself has not been run remotely.
+used an isolated PostgreSQL 18 instance; CI runs against PostgreSQL 16, matching
+Compose. Check the pull request's **Backend** check for the latest remote result.
 
 ## Change the schema later
 
