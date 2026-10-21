@@ -39,7 +39,3 @@ flowchart LR
 From **Yamen**: `backend/Warehouse.Api/Program.cs`, `backend/Warehouse.Api/Contracts/WarehouseSnapshot.cs`, `docs/backend-contracts.md`, `docs/backend-setup.md`; mention ASP.NET Core, PostgreSQL, EF Core, revision-guarded tick endpoints.
 
 From **Erfan**: `backend/Simulation/Models`, `backend/Simulation/Algorithms` (or corresponding implementation), demo output showing a seven-step A* path; mention shortest-path navigation, assignment, and collision checks.
-
-## Presentation narrative (60 seconds)
-
-Our project coordinates autonomous robots in a warehouse. Erfan's C# simulation library calculates paths and movement rules. Yamen's ASP.NET Core API manages persistent warehouses, robots and delivery tasks using EF Core and PostgreSQL. My part is the React and TypeScript interface: the map shows storage racks, pickup and dropoff stations, and the robot's current position. In demo mode it replays Erfan's A* example. In live mode, the screen calls Yamen's API for each simulation tick and visualizes the returned robot state. The first milestone is an integrated, demonstrable prototype, with 3D and advanced automation deferred.
