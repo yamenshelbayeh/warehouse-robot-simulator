@@ -16,21 +16,46 @@ function Icon({name}: {name:'play'|'pause'|'step'|'reset'}) {
 }
 function RobotIcon({large=false}: {large?:boolean}) {
  return <svg className={`robot-svg ${large?'large':''}`} viewBox="0 0 80 80" role="img" aria-label="Robot">
-  <ellipse cx="40" cy="69" rx="24" ry="5" fill="#4f1020" opacity=".16"/>
-  <rect x="12" y="35" width="8" height="24" rx="3" fill="#5e6878"/><rect x="60" y="35" width="8" height="24" rx="3" fill="#5e6878"/>
-  <rect x="16" y="19" width="48" height="44" rx="12" fill="#a91e35" stroke="#861529" strokeWidth="2"/>
-  <rect x="24" y="13" width="32" height="10" rx="5" fill="#7f162b"/>
-  <rect x="22" y="28" width="36" height="25" rx="8" fill="#fff5f5"/>
-  <circle cx="32" cy="39" r="4" fill="#ad263b"/><circle cx="48" cy="39" r="4" fill="#ad263b"/>
-  <path d="M34 47q6 5 12 0" fill="none" stroke="#ad263b" strokeWidth="2" strokeLinecap="round"/>
+  <ellipse cx="40" cy="69" rx="24" ry="5" fill="var(--burgundy)" opacity=".12"/>
+  <rect x="12" y="35" width="8" height="24" rx="3" fill="var(--shelf-frame)"/><rect x="60" y="35" width="8" height="24" rx="3" fill="var(--shelf-frame)"/>
+  <rect x="16" y="19" width="48" height="44" rx="12" fill="var(--crimson)" stroke="var(--crimson-dark)" strokeWidth="2"/>
+  <rect x="24" y="13" width="32" height="10" rx="5" fill="var(--crimson-dark)"/>
+  <rect x="22" y="28" width="36" height="25" rx="8" fill="var(--ivory)"/>
+  <circle cx="32" cy="39" r="4" fill="var(--crimson)"/><circle cx="48" cy="39" r="4" fill="var(--crimson)"/>
+  <path d="M34 47q6 5 12 0" fill="none" stroke="var(--crimson)" strokeWidth="2" strokeLinecap="round"/>
  </svg>;
 }
 function ShelfIcon() {return <svg className="shelf-svg" viewBox="0 0 80 80" role="img" aria-label="Storage shelf">
- <rect x="13" y="10" width="54" height="60" rx="4" fill="#627187"/>
- {[15,34,53].map(y=><g key={y}><rect x="19" y={y} width="42" height="16" rx="2" fill="#caa77d" stroke="#ad8659" strokeWidth="1"/><path d={`M40 ${y}v16`} stroke="#ab865b" strokeWidth="1.5"/></g>)}
- <path d="M14 32h52M14 51h52" stroke="#405169" strokeWidth="3"/><rect x="11" y="9" width="5" height="63" rx="2" fill="#455366"/><rect x="64" y="9" width="5" height="63" rx="2" fill="#455366"/>
+ <rect x="13" y="10" width="54" height="60" rx="4" fill="var(--shelf-frame)"/>
+ {[15,34,53].map(y=><g key={y}><rect x="19" y={y} width="42" height="16" rx="2" fill="var(--shelf-box)" stroke="var(--shelf-line)" strokeWidth="1"/><path d={`M40 ${y}v16`} stroke="var(--shelf-line)" strokeWidth="1.5"/></g>)}
+ <path d="M14 32h52M14 51h52" stroke="var(--shelf-frame)" strokeWidth="3"/><rect x="11" y="9" width="5" height="63" rx="2" fill="var(--shelf-frame)"/><rect x="64" y="9" width="5" height="63" rx="2" fill="var(--shelf-frame)"/>
  </svg>}
 function GoalIcon(){return <div className="goal-mark"><svg viewBox="0 0 40 42" aria-hidden="true"><path d="M11 37V6" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/><path d="M13 7h22l-8 10 8 10H13z" fill="currentColor"/></svg><span>GOAL</span></div>}
+
+function MetricIcon({name}: {name: 'robot' | 'grid' | 'route' | 'status'}) {
+ const paths = {
+  robot: <><rect x="5" y="7" width="14" height="13" rx="4"/><path d="M12 3v4M2 12v5M22 12v5M9 16h6"/><circle cx="9" cy="12" r="1"/><circle cx="15" cy="12" r="1"/></>,
+  grid: <><rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></>,
+  route: <><circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M5 8v7a3 3 0 0 0 3 3h3a3 3 0 0 0 3-3V9a3 3 0 0 1 3-3h2v10"/></>,
+  status: <><circle cx="12" cy="12" r="9"/><path d="m8 12 3 3 5-6"/></>,
+ };
+ return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>;
+}
+
+function HeroMap() {
+ return <svg className="hero-map" viewBox="0 0 480 280" fill="none" aria-hidden="true">
+  <g transform="translate(230 -28) rotate(34) skewX(-18)">
+   {Array.from({length: 5}, (_, r) => Array.from({length: 6}, (_, c) =>
+    <rect key={`${r}-${c}`} x={c * 48} y={r * 48} width="42" height="42" rx="6" fill="currentColor" fillOpacity=".025" stroke="currentColor" strokeOpacity=".13"/>
+   ))}
+   <path d="M21 21v96h144v96h96" stroke="#ed8ba1" strokeWidth="3" strokeDasharray="5 7" strokeLinecap="round"/>
+   {[[69,69],[117,69],[165,69],[69,165],[117,165],[213,117]].map(([x,y]) => <g key={`${x}-${y}`}><rect x={x-14} y={y-14} width="28" height="28" rx="4" fill="currentColor" fillOpacity=".12" stroke="currentColor" strokeOpacity=".26"/><path d={`M${x-14} ${y}h28M${x} ${y-14}v28`} stroke="currentColor" strokeOpacity=".2"/></g>)}
+   <rect x="5" y="5" width="32" height="32" rx="9" fill="#B82542" stroke="#ed8ba1"/>
+   <path d="M13 16h16v11H13zM18 12h6" stroke="#fff5ef" strokeWidth="2" strokeLinejoin="round"/>
+   <circle cx="261" cy="213" r="10" fill="#ed8ba1" fillOpacity=".18" stroke="#ed8ba1"/><circle cx="261" cy="213" r="3" fill="#ed8ba1"/>
+  </g>
+ </svg>;
+}
 
 export default function App() {
  const [mode,setMode] = useState<Mode>('demo');
@@ -111,49 +136,99 @@ useEffect(() => {
 }, [playing, live, finished, snapshot, busy, advance]);
  useEffect(()=>{if(finished)setPlaying(false)},[finished]);
  function toggleMode(next:Mode){setPlaying(false);setError('');setMode(next);}
+ const statusTone = (live ? task?.status === 'Completed' : demoFinished) ? 'complete'
+  : (status === 'Paused' || status === 'Waiting' || (live && task?.status === 'Cancelled')) ? 'paused' : 'active';
+
  return <div className="app">
-  <div className="accent-line"/>
-  <header className="topbar"><div className="topbar-content"><div className="branding"><span className="brand-icon">▦</span><span><strong>WAREHOUSE<span className="red">/OS</span></strong><small>SDE MANIACS · RUNTIME TERROR</small></span></div><div className="header-right"><span className="workspace-tag"><span className="online-dot"/>Prototype workspace</span><span className="user-avatar">RT</span></div></div></header>
+  <a className="skip-link" href="#simulation">Skip to simulation</a>
+  <header className="topbar">
+   <div className="topbar-content">
+    <div className="branding">
+     <span className="brand-icon"><MetricIcon name="grid"/></span>
+     <span><strong>WAREHOUSE<span className="brand-slash">/</span>OS</strong><small>SDE MANIACS · RUNTIME TERROR</small></span>
+    </div>
+    <div className="header-right"><span className="workspace-tag">SIMULATION WORKSPACE</span><span className="user-avatar" aria-label="Runtime Terror">RT</span></div>
+   </div>
+  </header>
   <main className="container">
-   <div className="breadcrumbs"><span>Workspace</span><span>/</span><strong>Simulation overview</strong></div>
-   <section className="hero"><div className="hero-content"><span className="hero-eyebrow">FLEET CONTROL CENTER · PRESENTATION PROTOTYPE</span><h1>Warehouse Robot Simulator</h1><p>Visualize robot navigation and connect to the actual ASP.NET Core simulation API.</p></div><span className="hero-badge">{live?'● LIVE API MODE':'● A* DEMO MODE'}</span></section>
-   <div className="integration-bar"><div><strong>Data source</strong><span>Choose demonstration playback or Yamen's actual backend</span></div><div className="mode-switch"><button className={mode==='demo'?'active':''} onClick={()=>toggleMode('demo')}>A* demo</button><button className={live?'active':''} onClick={()=>toggleMode('live')}>Live backend</button></div></div>
-   {live && <div className="backend-tools"><span><strong>API:</strong> {apiState}</span><button onClick={()=>void refreshList()} disabled={busy}>Check connection / refresh</button><select aria-label="Select warehouse" value={selectedId} onChange={e=>void loadWarehouse(e.target.value)} disabled={busy}><option value="">Select a warehouse...</option>{warehouses.map(w=><option key={w.id} value={w.id}>{w.name}</option>)}</select><button className="create-button" onClick={()=>void createLive()} disabled={busy}>Create live delivery demo</button></div>}
-   {error && <div className="error-banner" role="alert"><strong>Connection / API error:</strong> {error}<div>Ensure Yamen's API and PostgreSQL are running on port 5080. If this was a revision conflict, refresh the warehouse.</div></div>}
-   <section className="kpis" aria-label="Simulation metrics">
-    <div className="kpi"><span className="kpi-label">ROBOTS</span><strong>{live?(snapshot?.robots.length ?? 0):1}</strong><span className="kpi-detail">Units in current warehouse</span></div>
-    <div className="kpi"><span className="kpi-label">WAREHOUSE GRID</span><strong>{rows} × {columns}</strong><span className="kpi-detail">Grid cells · row and column</span></div>
-    <div className="kpi"><span className="kpi-label">{live?'CURRENT TICK':'PATH LENGTH'}</span><strong>{live?count:total}</strong><span className="kpi-detail">{live?'Backend simulation ticks':'A* demonstration steps'}</span></div>
-    <div className="kpi"><span className="kpi-label">STATUS</span><strong className="state-title">{status}</strong><span className="kpi-detail">{live?(task?.status ?? 'No task'):`${percent}% complete`}</span></div>
+   <div className="breadcrumbs"><span>Workspace</span><span aria-hidden="true">/</span><strong>Simulation overview</strong></div>
+   <section className="hero" aria-labelledby="page-title">
+    <HeroMap/>
+    <div className="hero-content">
+     <span className="hero-eyebrow"><span/> PRECISION IN EVERY MOVE</span>
+     <h1 id="page-title">Warehouse Robot Simulator<span className="title-period">.</span></h1>
+     <p>A clear view of every move. Explore robot navigation, monitor your fleet, and run the next simulation.</p>
+    </div>
+    <span className="hero-badge"><span className="badge-dot"/>{live ? 'LIVE API MODE' : 'A* DEMO MODE'}</span>
    </section>
-   <div className="dashboard">
-    <section className="panel warehouse-panel"><div className="panel-head"><div><span className="section-eyebrow">01 / MAP MONITOR</span><h2>Warehouse visualization</h2><p>Robot positions, storage, pickup and destination</p></div><span className="head-tag">{rows} rows × {columns} cols</span></div>
-     <div className="map-toolbar"><div className="toolbar-label"><span className="live-indicator"/>FLOOR PLAN · LEVEL 01</div><div className="map-grid-reference">ORIGIN (0, 0) · ROW / COLUMN</div></div>
-     <div className="map-container"><div className="grid-with-labels" style={{gridTemplateColumns:`25px repeat(${columns}, minmax(0, 1fr))`,width:`min(100%,${Math.max(420,columns*95)}px)`}}>
-      <div className="corner-axis"/>{Array.from({length:columns},(_,c)=><div className="axis-label" key={`h${c}`}>{String(c).padStart(2,'0')}</div>)}
-      {Array.from({length:rows},(_,r)=><div key={`row-${r}`} style={{display:'contents'}}><div className="axis-label row-axis">{String(r).padStart(2,'0')}</div>{Array.from({length:columns},(_,c)=>{
-       const p={row:r,column:c};const t=live?(cells.get(key(p))??'Empty'):(demoShelves.has(key(p))?'Shelf':'Empty');
-       const shelf=t==='Shelf',pickup=t==='Pickup',dropoff=t==='Dropoff';
-       const isRobot=live ? snapshot?.robots.some(x=>same(x.position,p))??false : same(p,position);
-       const isGoal=live?dropoff:same(p,goal);
-       const onRoute=routeCells.has(key(p)),visited=visitedCells.has(key(p));
-       return <div key={key(p)} title={`Row ${r}, column ${c} · ${t}${isRobot?' · Robot':''}`} className={`cell ${shelf?'cell-shelf':''} ${onRoute?'cell-route':''} ${visited?'cell-visited':''} ${isGoal?'cell-goal':''} ${isRobot?'cell-robot':''}`}>
-        {isRobot?<div className={`robot-unit ${playing?'robot-moving':''}`}><RobotIcon/><span className="robot-unit-tag">R{live?(snapshot?.robots.find(x=>same(x.position,p))?.id??1):1}</span></div>:shelf?<ShelfIcon/>:isGoal?<GoalIcon/>:pickup?<span className="pickup-mark">PICKUP</span>:onRoute?<span className="route-marker"/>:null}
-       </div>;
-      })}</div>)}
-     </div></div>
-     <div className="legend"><div><span className="legend-robot"><RobotIcon/></span> Robot</div><div><span className="legend-shelf"><ShelfIcon/></span> Shelf</div><div><i className="legend-route"/> {live?'Pickup / travel':'A* route'}</div><div><i className="legend-finish"/> Goal</div></div>
-     <div className="map-footnote">{live?'Coordinates and robot positions come directly from the backend snapshot. Route overlays are shown only in local A* demo mode.':'This sample path matches Erfan’s seven-step A* console demonstration. Switch to Live backend to view real robot positions.'}</div>
+
+   <section className="integration-bar" aria-label="Simulation data source">
+    <div><strong>Your simulation, your source</strong><span>{live ? 'Connect a warehouse to view real simulation state.' : 'Explore the sample route with local demonstration data.'}</span></div>
+    <div className="mode-switch" role="group" aria-label="Data source">
+     <button className={!live ? 'active' : ''} aria-pressed={!live} onClick={() => toggleMode('demo')}>A* demo</button>
+     <button className={live ? 'active' : ''} aria-pressed={live} onClick={() => toggleMode('live')}>Live backend</button>
+    </div>
+   </section>
+   {live && <div className="backend-tools" aria-label="Backend connection controls" aria-busy={busy}>
+    <span className={`connection-state ${apiState === 'Connected' ? 'connected' : ''}`}><i/><strong>API</strong> {apiState}</span>
+    <button onClick={() => void refreshList()} disabled={busy}>Check connection / refresh</button>
+    <select aria-label="Select warehouse" value={selectedId} onChange={e => void loadWarehouse(e.target.value)} disabled={busy}><option value="">Select a warehouse...</option>{warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}</select>
+    <button className="create-button" onClick={() => void createLive()} disabled={busy}>Create live delivery demo</button>
+   </div>}
+   {error && <div className="error-banner" role="alert"><strong>Connection / API error:</strong> {error}<div>Check that the API and database are running. For a revision conflict, select the warehouse again to reload it.</div></div>}
+
+   <section className="kpis" aria-label="Simulation metrics">
+    <div className="kpi"><span className="kpi-label">ROBOTS</span><span className="kpi-icon"><MetricIcon name="robot"/></span><strong>{live ? (snapshot?.robots.length ?? 0) : 1}<small>unit{live && snapshot?.robots.length !== 1 ? 's' : ''}</small></strong><span className="kpi-detail">In the current warehouse</span></div>
+    <div className="kpi"><span className="kpi-label">WAREHOUSE GRID</span><span className="kpi-icon"><MetricIcon name="grid"/></span><strong>{rows}<span className="multiply">×</span>{columns}</strong><span className="kpi-detail">Rows × columns</span></div>
+    <div className="kpi"><span className="kpi-label">{live ? 'CURRENT TICK' : 'PATH LENGTH'}</span><span className="kpi-icon"><MetricIcon name="route"/></span><strong>{live ? count : total}<small>{live ? 'ticks' : 'steps'}</small></strong><span className="kpi-detail">{live ? 'Backend simulation clock' : 'Sample A* route'}</span></div>
+    <div className={`kpi status-kpi tone-${statusTone}`}><span className="kpi-label">ROBOT STATUS</span><span className="kpi-icon"><MetricIcon name="status"/></span><strong className="state-title"><i className="state-dot"/>{status}</strong><span className="kpi-detail">{live ? (task?.status ?? 'No task assigned') : `${percent}% of route complete`}</span></div>
+   </section>
+
+   <div id="simulation" className="dashboard" tabIndex={-1}>
+    <section className="panel warehouse-panel" aria-labelledby="map-title">
+     <div className="panel-head"><div><span className="section-eyebrow">01 / MAP MONITOR</span><h2 id="map-title">Warehouse visualization</h2><p>Every position. One clear picture.</p></div><span className="head-tag">{rows} × {columns} GRID</span></div>
+     <div className="map-toolbar"><div className="toolbar-label"><span className="floor-indicator"/>FLOOR PLAN <span className="toolbar-divider">/</span> LEVEL 01</div><span className="map-grid-reference">ROW / COLUMN</span></div>
+     <div className="map-container" tabIndex={0} role="region" aria-label="Warehouse floor plan. Scroll to view larger grids.">
+      <div className="grid-with-labels" style={{gridTemplateColumns: `var(--axis-width) repeat(${columns}, minmax(0, 1fr))`, width: `min(100%, ${columns * 92 + 28}px)`, minWidth: `${columns * 42 + 28}px`}}>
+       <div className="corner-axis"/>{Array.from({length: columns}, (_, c) => <div className="axis-label" key={`h${c}`}>{String(c).padStart(2, '0')}</div>)}
+       {Array.from({length: rows}, (_, r) => <div key={`row-${r}`} style={{display: 'contents'}}><div className="axis-label row-axis">{String(r).padStart(2, '0')}</div>{Array.from({length: columns}, (_, c) => {
+        const p = {row: r, column: c};
+        const t = live ? (cells.get(key(p)) ?? 'Empty') : (demoShelves.has(key(p)) ? 'Shelf' : 'Empty');
+        const shelf = t === 'Shelf', pickup = t === 'Pickup', dropoff = t === 'Dropoff';
+        const isRobot = live ? snapshot?.robots.some(x => same(x.position, p)) ?? false : same(p, position);
+        const isGoal = live ? dropoff : same(p, goal);
+        const onRoute = routeCells.has(key(p)), visited = visitedCells.has(key(p));
+        const routeIndex = live ? -1 : route.findIndex(point => same(point, p));
+        const next = routeIndex >= 0 ? route[routeIndex + 1] : undefined;
+        const routeDirection = next ? (next.row > r ? 'south' : next.row < r ? 'north' : next.column > c ? 'east' : 'west') : '';
+        return <div key={key(p)} title={`Row ${r}, column ${c} · ${t}${isRobot ? ' · Robot' : ''}`} className={`cell ${shelf ? 'cell-shelf' : ''} ${onRoute ? 'cell-route' : ''} ${visited ? 'cell-visited' : ''} ${isGoal ? 'cell-goal' : ''} ${isRobot ? 'cell-robot' : ''} ${pickup ? 'cell-pickup' : ''} ${isGoal && statusTone === 'complete' ? 'goal-complete' : ''}`}>
+         {next && <span className={`route-link route-link-${routeDirection} ${routeIndex < step ? 'route-link-visited' : ''}`} aria-hidden="true"/>}
+         {isRobot ? <div className={`robot-unit ${playing ? 'robot-moving' : ''}`}><RobotIcon/><span className="robot-unit-tag">R{live ? (snapshot?.robots.find(x => same(x.position, p))?.id ?? 1) : 1}</span></div> : shelf ? <ShelfIcon/> : isGoal ? <GoalIcon/> : pickup ? <span className="pickup-mark">PICKUP</span> : onRoute ? <span className="route-marker"/> : null}
+        </div>;
+       })}</div>)}
+      </div>
+     </div>
+     <div className="legend"><div><span className="legend-robot"><RobotIcon/></span> Robot</div><div><span className="legend-shelf"><ShelfIcon/></span> Shelf</div><div><i className="legend-route"/> {live ? 'Pickup' : 'A* route'}</div><div><i className="legend-finish"/> Goal</div></div>
+     <div className="map-footnote"><span className="note-icon" aria-hidden="true">i</span><p>{live ? 'Positions come directly from the backend. Route overlays are available in A* demo mode.' : 'A seven-step sample route around storage shelves. Switch to Live backend to follow real simulation state.'}</p></div>
     </section>
-    <aside className="panel operations-panel"><div className="panel-head"><div><span className="section-eyebrow">02 / FLEET STATUS</span><h2>Robot inspector</h2><p>Position, state, task and simulation controls</p></div><span className="head-tag">{live?'API':'DEMO'}</span></div>
-     <div className="unit-card"><div className="unit-portrait"><RobotIcon large/></div><div className="unit-details"><div className="unit-topline">AUTONOMOUS MOBILE ROBOT</div><h3>Robot R{live?(robot?.id??'–'):1}</h3><span className="status-chip">{status}</span></div></div>
-     <div className="section-divider-title">NAVIGATION DETAILS</div><div className="detail-list"><div><span>Current position</span><strong>Row {position.row}, Col {position.column}</strong></div><div><span>Destination</span><strong>Row {goal.row}, Col {goal.column}</strong></div><div><span>{live?'Task status':'Movement stage'}</span><strong>{live?(task?.status??'No task'):`${step} / ${total} steps`}</strong></div><div><span>{live?'Battery':'Algorithm'}</span><strong>{live?(robot?`${robot.battery}%`:'–'):'A* Pathfinding'}</strong></div></div>
-     <div className="progress-block"><div className="progress-label"><span>{live?'TICK PROGRESS (ILLUSTRATIVE)':'ROUTE COMPLETION'}</span><strong>{percent}%</strong></div><div className="progress-track" role="progressbar" aria-label="Simulation progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><div style={{width:`${percent}%`}}/></div><div className="progress-caption">{live?'Task completion is determined by the backend status.':'Path playback for presentation'}</div></div>
-     <div className="section-divider-title control-divider">SIMULATION CONTROLS</div><div className="actions"><button className="btn btn-primary" disabled={!canTick} onClick={()=>setPlaying(p=>!p)}><Icon name={playing?'pause':'play'}/>{playing?'Pause':'Start'}</button><button className="btn btn-outline" disabled={!canTick} onClick={()=>{setPlaying(false);void advance()}}><Icon name="step"/>Step</button><button className="btn btn-outline" onClick={()=>{setPlaying(false);if(live){void refreshList()}else{setStep(0)}}}><Icon name="reset"/>{live?'Refresh list':'Reset'}</button></div>
-     <div className="side-note">{live?'Live mode sends requests to Yamen’s ASP.NET Core API. It modifies persisted simulation state; no reset endpoint exists, so create a fresh delivery demo to restart.':'Demo mode uses local example data and does not change the database.'}</div>
+
+    <aside className={`panel operations-panel tone-${statusTone}`} aria-labelledby="inspector-title">
+     <div className="panel-head"><div><span className="section-eyebrow">02 / FLEET STATUS</span><h2 id="inspector-title">Robot inspector</h2><p>A closer look at your next move.</p></div><span className="head-tag">{live ? 'API' : 'DEMO'}</span></div>
+     <div className="unit-card"><div className="unit-portrait"><RobotIcon large/></div><div className="unit-details"><div className="unit-topline">AUTONOMOUS MOBILE ROBOT</div><h3>Robot R{live ? (robot?.id ?? '–') : 1}</h3><span className="status-chip" role="status"><i className="state-dot"/>{status}</span></div></div>
+     <div className="section-divider-title">NAVIGATION DETAILS</div>
+     <div className="detail-list">
+      <div><span>Current position</span><strong>Row {position.row}<span className="coordinate-separator">/</span>Col {position.column}</strong></div>
+      <div><span>Destination</span><strong>Row {goal.row}<span className="coordinate-separator">/</span>Col {goal.column}</strong></div>
+      <div><span>{live ? 'Task status' : 'Movement stage'}</span><strong>{live ? (task?.status ?? 'No task') : `${step} / ${total} steps`}</strong></div>
+      <div><span>{live ? 'Battery' : 'Algorithm'}</span><strong>{live ? (robot ? `${robot.battery}%` : '–') : 'A* Pathfinding'}</strong></div>
+     </div>
+     <div className="progress-block"><div className="progress-label"><span>{live ? 'TICK PROGRESS · ILLUSTRATIVE' : 'ROUTE COMPLETION'}</span><strong>{percent}<small>%</small></strong></div><div className="progress-track" role="progressbar" aria-label="Simulation progress" aria-valuemin={0} aria-valuemax={100} aria-valuenow={percent}><div style={{width: `${percent}%`}}/></div><div className="progress-caption">{live ? 'Completion is confirmed by the backend task status.' : `${total - step} ${total - step === 1 ? 'step' : 'steps'} remaining to destination`}</div></div>
+     <div className="section-divider-title control-divider">SIMULATION CONTROLS</div>
+     <div className="actions"><button className="btn btn-primary" disabled={!canTick} onClick={() => setPlaying(p => !p)}><Icon name={playing ? 'pause' : 'play'}/>{playing ? 'Pause' : 'Start'}</button><button className="btn btn-outline" disabled={!canTick} onClick={() => {setPlaying(false); void advance()}}><Icon name="step"/>Step</button><button className="btn btn-outline" onClick={() => {setPlaying(false); if (live) {void refreshList()} else {setStep(0)}}}><Icon name="reset"/>{live ? 'Refresh list' : 'Reset'}</button></div>
+     <div className="side-note"><span className="note-icon" aria-hidden="true">i</span><p>{live ? 'Live controls update saved simulation state. To start over, create a new delivery demo.' : 'A local demo, ready to explore. Playback does not change your database.'}</p></div>
     </aside>
    </div>
-   <footer><span>© 2026 SDE Maniacs · Runtime Terror</span><span>React + TypeScript · Prototype build 0.3</span></footer>
+   <footer><span><strong>WAREHOUSE/OS</strong><span className="footer-separator">/</span>Built for every move.</span><span>© 2026 SDE Maniacs · Runtime Terror</span></footer>
   </main>
- </div>
+ </div>;
 }
