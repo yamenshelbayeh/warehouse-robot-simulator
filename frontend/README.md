@@ -35,3 +35,11 @@ Manual tests: sample Start/Pause/Step/Reset; in live mode connect, create demo, 
 ## Scope
 
 The frontend is a first-presentation prototype, not a production system. No authentication, charging automation, 3D rendering, automatic task queue, or WebSockets yet.
+
+## Visual theme
+
+The interface uses burgundy (`#230911`) for the header, warm ivory (`#F8F3EF`) for the workspace, white cards, and crimson (`#B82542`) for primary actions. Shared color tokens live at the top of `src/style.css`, including the robot and shelf illustration colors. Green indicates completion; amber indicates a paused or waiting state.
+
+The floor plan connects the existing sample route in demo mode only. Live mode continues to render backend positions without inferring a route. Layouts adapt to mobile screens, larger grids scroll inside the map, all controls have visible keyboard focus, and reduced-motion preferences disable decorative animation. Fonts and illustrations are local; the theme adds no dependencies or third-party requests.
+
+Inter is bundled as a variable WOFF2 font under the SIL Open Font License; see `public/fonts/Inter-LICENSE.txt`.
